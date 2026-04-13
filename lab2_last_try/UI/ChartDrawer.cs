@@ -5,9 +5,6 @@ using NumericalMethodsApp.Models;
 
 namespace NumericalMethodsApp.UI
 {
-    /// <summary>
-    /// Класс для отрисовки графиков
-    /// </summary>
     public static class ChartDrawer
     {
         // построение графика функции
@@ -35,7 +32,9 @@ namespace NumericalMethodsApp.UI
             {
                 double y = equation.Func(x);
                 if (Math.Abs(y) < 1000)
+                {
                     series.Points.AddXY(x, y);
+                }   
             }
 
             zeroSeries.Points.AddXY(a, 0);
@@ -59,15 +58,16 @@ namespace NumericalMethodsApp.UI
                     ChartType = SeriesChartType.Point,
                     Color = Color.Green,
                     MarkerSize = 14,
-                    MarkerStyle = MarkerStyle.Diamond,
+                    MarkerStyle = MarkerStyle.Circle,
                     BorderWidth = 2,
                     BorderColor = Color.Black
                 };
 
                 rootSeries.Points.AddXY(root, 0);
-                rootSeries.Points[0].Label = $"  x = {root:F6}";
+                rootSeries.Points[0].Label = $"x = {root:F6}";
                 rootSeries.Points[0].LabelForeColor = Color.DarkGreen;
                 rootSeries.Points[0].Font = new Font("Arial", 9, FontStyle.Bold);
+
                 chart.Series.Add(rootSeries);
                 chart.Invalidate();
             }
@@ -151,13 +151,13 @@ namespace NumericalMethodsApp.UI
                     ChartType = SeriesChartType.Point,
                     Color = Color.Green,
                     MarkerSize = 15,
-                    MarkerStyle = MarkerStyle.Diamond,
+                    MarkerStyle = MarkerStyle.Circle,
                     BorderWidth = 3,
                     BorderColor = Color.Black
                 };
 
                 solutionPoint.Points.AddXY(lastSolution.X, lastSolution.Y);
-                solutionPoint.Points[0].Label = $"  ({lastSolution.X:F4}, {lastSolution.Y:F4})";
+                solutionPoint.Points[0].Label = $"({lastSolution.X:F4}, {lastSolution.Y:F4})";
                 solutionPoint.Points[0].LabelForeColor = Color.DarkGreen;
                 solutionPoint.Points[0].Font = new Font("Arial", 9, FontStyle.Bold);
                 chart.Series.Add(solutionPoint);

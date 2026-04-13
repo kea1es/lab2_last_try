@@ -4,9 +4,6 @@ using NumericalMethodsApp.Models;
 
 namespace NumericalMethodsApp.Solvers
 {
-    /// <summary>
-    /// Класс для решения систем нелинейных уравнений
-    /// </summary>
     public static class SystemSolver
     {
         // метод Ньютона для решения систем
@@ -43,7 +40,9 @@ namespace NumericalMethodsApp.Solvers
                 y += dy;
 
                 if (Math.Abs(dx) < eps && Math.Abs(dy) < eps)
+                {
                     break;
+                }     
             }
 
             return new NewtonResult { X = x, Y = y, Iterations = iterations, Errors = errors };

@@ -4,9 +4,6 @@ using NumericalMethodsApp.Models;
 
 namespace NumericalMethodsApp.Solvers
 {
-    /// <summary>
-    /// Класс для решения нелинейных уравнений
-    /// </summary>
     public static class EquationSolver
     {
         // метод половинного деления
@@ -17,9 +14,12 @@ namespace NumericalMethodsApp.Solvers
             double f_b = equation.Func(b);
 
             if (f_a * f_b >= 0)
-                throw new Exception("Метод половинного деления: f(a) и f(b) должны иметь разные знаки!");
+            {
+                throw new Exception("Метод половинного деления: f(a) и f(b) должны иметь разные знаки");
+            }
 
             double c = a;
+
             while ((b - a) / 2 > eps)
             {
                 iterations++;
@@ -33,6 +33,7 @@ namespace NumericalMethodsApp.Solvers
                     b = c;
                     f_b = f_c;
                 }
+
                 else
                 {
                     a = c;
@@ -69,7 +70,11 @@ namespace NumericalMethodsApp.Solvers
         // метод простой итерации
         public static IterationResult SimpleIterationMethod(Equation equation, double a, double b, double eps)
         {
+            // Вычисляем параметр lambda для приведения уравнения к виду x = phi(x)
+            // lambda = -1 / max|f'(x)| на интервале [a, b]
             double lambda = -1.0 / FindMaxDerivative(equation, a, b);
+
+            // Итерационная функция phi(x) = x + λ * f(x)
             Func<double, double> phi = x => x + lambda * equation.Func(x);
 
             double maxDerivative = FindMaxDerivativeDerivative(phi, a, b);
@@ -85,7 +90,7 @@ namespace NumericalMethodsApp.Solvers
             double xPrev = x0;
             double xCurrent = phi(xPrev);
 
-            while (Math.Abs(xCurrent - xPrev) > eps && iterations < 1000)
+            while ((Math.Abs(xCurrent - xPrev) > eps) && (iterations < 1000))
             {
                 iterations++;
                 xPrev = xCurrent;
@@ -101,14 +106,19 @@ namespace NumericalMethodsApp.Solvers
             };
         }
 
-        // поиск максимума производной
+        // поиск максимума модуля производной
         private static double FindMaxDerivative(Equation equation, double a, double b)
         {
             double max = Math.Abs(equation.Derivative(a));
+
+            // Разбиваем интервал на 100 частей и ищем максимум
             for (double x = a; x <= b; x += (b - a) / 100)
             {
                 double d = Math.Abs(equation.Derivative(x));
-                if (d > max) max = d;
+                if (d > max)
+                {
+                    max = d;
+                }
             }
             return max;
         }
@@ -122,7 +132,10 @@ namespace NumericalMethodsApp.Solvers
             for (double x = a; x <= b; x += (b - a) / 100)
             {
                 double d = Math.Abs((phi(x + h) - phi(x)) / h);
-                if (d > max) max = d;
+                if (d > max)
+                {
+                    max = d;
+                }
             }
 
             return max;

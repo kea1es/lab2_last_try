@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using System.Windows.Forms;
-using NumericalMethodsApp.Models;
-using NumericalMethodsApp.Solvers;
-using NumericalMethodsApp.UI;
-using NumericalMethodsApp.Helpers;
 using System.Windows.Forms.DataVisualization.Charting;
+using NumericalMethodsApp.Models;
+using NumericalMethodsApp.UI;
 
 namespace NumericalMethodsApp
 {
@@ -30,14 +27,21 @@ namespace NumericalMethodsApp
         private RichTextBox resultSystem;
         private Chart chartSystem;
 
+        // Данные
         private List<Equation> equations;
         private List<SystemEquation> systems;
         private NewtonResult lastSolution = null;
+
+        // Обработчики событий
+        private EquationEventHandlers equationHandlers;
+        private SystemEventHandlers systemHandlers;
 
         public MainForm()
         {
             InitializeComponents();
             InitializeData();
+            InitializeEventHandlers();
+            SubscribeEvents();
         }
 
         private void InitializeComponents()
@@ -96,7 +100,6 @@ namespace NumericalMethodsApp
 
             y += 50;
 
-
             var lableResult = new Label { Text = "Результаты:", Location = new Point(20, y), Size = new Size(100, 25) };
             y += 25;
 
@@ -146,7 +149,6 @@ namespace NumericalMethodsApp
 
             y += 40;
 
-
             var lableX0 = new Label { Text = "x₀ =", Location = new Point(20, y), Size = new Size(40, 25) };
             x0 = new TextBox { Text = "-0.25", Location = new Point(70, y), Width = 100 };
             var lableY0 = new Label { Text = "y₀ =", Location = new Point(190, y), Size = new Size(40, 25) };
@@ -154,26 +156,21 @@ namespace NumericalMethodsApp
 
             y += 40;
 
-
             var lableEps = new Label { Text = "Погрешность ε:", Location = new Point(20, y), Size = new Size(100, 25) };
             epsilonSystem = new TextBox { Text = "0.0001", Location = new Point(130, y), Width = 100 };
 
             y += 50;
 
-
-            btnSolveSystem = new Button { Text = "Решить систему (Метод Ньютона)", Location = new Point(20, y), Size = new Size(220, 35), BackColor = Color.LightGreen };
-            btnDrawSystemGraph = new Button { Text = "Построить графики", Location = new Point(260, y), Size = new Size(150, 35), BackColor = Color.LightBlue };
+            btnSolveSystem = new Button { Text = "Решить систему (Метод Ньютона)", Location = new Point(20, y), Size = new Size(220, 35), BackColor = Color.White };
+            btnDrawSystemGraph = new Button { Text = "Построить графики", Location = new Point(260, y), Size = new Size(150, 35), BackColor = Color.White };
 
             y += 50;
-
 
             var lableResult = new Label { Text = "Результаты:", Location = new Point(20, y), Size = new Size(100, 25) };
             y += 25;
 
-
             resultSystem = new RichTextBox { Location = new Point(20, y), Size = new Size(550, 350), Font = new Font("Consolas", 10), ReadOnly = true };
             y += 370;
-
 
             chartSystem = new Chart { Location = new Point(600, 20), Size = new Size(550, 450) };
             chartSystem.ChartAreas.Add(new ChartArea());
@@ -217,7 +214,6 @@ namespace NumericalMethodsApp
             }
             chooseEquation.SelectedIndex = 0;
 
-
             systems = new List<SystemEquation>
             {
                 new SystemEquation(
@@ -246,285 +242,64 @@ namespace NumericalMethodsApp
                 cmbSystem.Items.Add(sys.Name);
             }
             cmbSystem.SelectedIndex = 0;
-
-            btnSolve.Click += BtnSolve_Click;
-            btnDrawGraph.Click += BtnDrawGraph_Click;
-            btnSolveSystem.Click += BtnSolveSystem_Click;
-            btnDrawSystemGraph.Click += BtnDrawSystemGraph_Click;
         }
 
-        private void BtnSolve_Click(object sender, EventArgs e)
+        private void InitializeEventHandlers()
         {
-            try
-            {
-                double a, b, eps;
+            // Создаем обработчики для уравнений
+            equationHandlers = new EquationEventHandlers(
+                this,
+                chooseEquation,
+                chooseMethod,
+                leftBorder,
+                rightBorder,
+                epsilon,
+                rbtnFileInput,
+                rbtnFileOutput,
+                txtResult,
+                chartEquation
+            );
 
-                if (rbtnFileInput.Checked)
-                {
-                    using (OpenFileDialog fileDialog = new OpenFileDialog())
-                    {
-                        fileDialog.Filter = "Текстовые файлы|*.txt|Все файлы|*.*";
-                        if (fileDialog.ShowDialog() == DialogResult.OK)
-                        {
-                            var data = FileHelper.ReadEquationData(fileDialog.FileName);
-                            a = data.a;
-                            b = data.b;
-                            eps = data.eps;
-                        }
-                        else return;
-                    }
-                }
-
-                else
-                {
-                    a = double.Parse(change(leftBorder.Text), CultureInfo.InvariantCulture);
-                    b = double.Parse(change(rightBorder.Text), CultureInfo.InvariantCulture);
-                    eps = double.Parse(change(epsilon.Text), CultureInfo.InvariantCulture);
-                }
-
-                ValidateInput(a, b, eps);
-
-                Equation equation = equations[chooseEquation.SelectedIndex];
-                CheckRootsExistence(equation, a, b);
-
-                string result = BuildResultHeader(equation, a, b, eps);
-
-                var solutionResult = SolveEquation(equation, a, b, eps);
-
-                if (solutionResult.success)
-                {
-                    result += BuildSuccessResult(solutionResult);
-                    ChartDrawer.DrawFunctionGraph(chartEquation, equation, a, b);
-                    ChartDrawer.MarkRootOnGraph(chartEquation, solutionResult.root);
-                }
-
-                else
-                {
-                    result += $"Ошибка: {solutionResult.error}\n\n";
-                    ChartDrawer.DrawFunctionGraph(chartEquation, equation, a, b);
-                }
-
-                if (rbtnFileOutput.Checked)
-                {
-                    using (SaveFileDialog sfd = new SaveFileDialog())
-                    {
-                        sfd.Filter = "Текстовые файлы|*.txt";
-                        if (sfd.ShowDialog() == DialogResult.OK)
-                        {
-                            FileHelper.SaveResult(sfd.FileName, result);
-                            MessageBox.Show("Результаты сохранены в файл", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                    }
-                }
-
-                txtResult.Text = result;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            // Создаем обработчики для систем
+            systemHandlers = new SystemEventHandlers(
+                this,
+                cmbSystem,
+                x0,
+                y0,
+                epsilonSystem,
+                resultSystem,
+                chartSystem
+            );
         }
 
-        private void ValidateInput(double a, double b, double eps)
+        private void SubscribeEvents()
         {
-            if (a >= b)
-            {
-                throw new Exception("Левая граница должна быть меньше правой");
-            }
-            if (eps <= 0)
-            {
-                throw new Exception("Погрешность должна быть положительной");
-            }
+            btnSolve.Click += equationHandlers.BtnSolve_Click;
+            btnDrawGraph.Click += equationHandlers.BtnDrawGraph_Click;
+            btnSolveSystem.Click += systemHandlers.BtnSolveSystem_Click;
+            btnDrawSystemGraph.Click += systemHandlers.BtnDrawSystemGraph_Click;
         }
 
-        private void CheckRootsExistence(Equation equation, double a, double b)
+        public Equation GetEquation(int index)
         {
-            double f_a = equation.Func(a);
-            double f_b = equation.Func(b);
-
-            if (f_a * f_b > 0)
-            {
-                var roots = EquationSolver.FindIntervals(equation, a, b, 100);
-                if (roots.Count == 0)
-                {
-                    throw new Exception("На заданном интервале нет корней");
-                }
-
-                else if (roots.Count > 1)
-                {
-                    MessageBox.Show($"Найдено {roots.Count} корней. Будет найден первый корень.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
+            return equations[index];
         }
 
-        private string BuildResultHeader(Equation equation, double a, double b, double eps)
+        public SystemEquation GetSystem(int index)
         {
-            string result = $"{"=".PadRight(60, '=')}\n";
-            result += $"Решение уравнения: {equation.Name}\n";
-            result += $"Интервал: [{a}, {b}], ε = {eps}\n";
-            result += $"Выбранный метод: {chooseMethod.SelectedItem}\n";
-            result += $"{"=".PadRight(60, '=')}\n\n";
-            return result;
+            return systems[index];
         }
 
-        private (bool success, double root, int iterations, string error) SolveEquation(Equation equation, double a, double b, double eps)
+        public void SetLastSolution(NewtonResult solution)
         {
-            switch (chooseMethod.SelectedIndex)
-            {
-                case 0:
-                    try
-                    {
-                        var result = EquationSolver.BisectionMethod(equation, a, b, eps);
-                        return (true, result.Root, result.Iterations, null);
-                    }
-
-                    catch (Exception ex)
-                    {
-                        return (false, 0, 0, ex.Message);
-                    }
-
-
-                case 1:
-                    try
-                    {
-                        var result = EquationSolver.SecantMethod(equation, a, b, eps);
-                        return (true, result.Root, result.Iterations, null);
-                    }
-
-                    catch (Exception ex)
-                    {
-                        return (false, 0, 0, ex.Message);
-                    }
-
-
-                case 2:
-                    var iterationResult = EquationSolver.SimpleIterationMethod(equation, a, b, eps);
-                    if (iterationResult.Success)
-                    {
-                        return (true, iterationResult.Root, iterationResult.Iterations, null);
-                    }
-
-                    else
-                    {
-                        return (false, 0, 0, "Не удалось найти φ(x) с условием сходимости |φ'(x)| < 1");
-                    }
-
-
-                default:
-                    return (false, 0, 0, "Метод не выбран");
-            }
+            lastSolution = solution;
         }
 
-        private string BuildSuccessResult((bool success, double root, int iterations, string error) solution)
+        public NewtonResult GetLastSolution()
         {
-            string result = $"Итог:\n";
-            result += $"  Корень: x = {solution.root:F10}\n";
-            result += $"  f(x) = {equations[chooseEquation.SelectedIndex].Func(solution.root):E10}\n";
-            result += $"  Кол-во итераций: {solution.iterations}\n\n";
-            return result;
+            return lastSolution;
         }
 
-        private void BtnDrawGraph_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                double a = double.Parse(change(leftBorder.Text), CultureInfo.InvariantCulture);
-                double b = double.Parse(change(rightBorder.Text), CultureInfo.InvariantCulture);
-
-                Equation equation = equations[chooseEquation.SelectedIndex];
-                ChartDrawer.DrawFunctionGraph(chartEquation, equation, a, b);
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void BtnSolveSystem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                double x_0 = double.Parse(change(x0.Text), CultureInfo.InvariantCulture);
-                double y_0 = double.Parse(change(y0.Text), CultureInfo.InvariantCulture);
-                double eps = double.Parse(change(epsilonSystem.Text), CultureInfo.InvariantCulture);
-
-                if (eps <= 0)
-                {
-                    throw new Exception("Погрешность должна быть положительной");
-                }
-
-
-                SystemEquation system = systems[cmbSystem.SelectedIndex];
-                var result = SystemSolver.NewtonMethod(system, x_0, y_0, eps);
-                lastSolution = result;
-
-                ChartDrawer.DrawSystemGraph(chartSystem, system, cmbSystem.SelectedIndex, lastSolution);
-
-                string output = BuildSystemResult(system, x_0, y_0, eps, result);
-                resultSystem.Text = output;
-
-                MessageBox.Show("Система решена. Точка решения на графике.", "Успех",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private string BuildSystemResult(SystemEquation system, double x0, double y0, double eps, NewtonResult result)
-        {
-            string output = $"{"=".PadRight(60, '=')}\n";
-            output += $"Решение системы: {system.Name}\n";
-            output += $"Начальные приближения: x₀ = {x0}, y₀ = {y0}\n";
-            output += $"Погрешность: ε = {eps}\n";
-            output += $"{"=".PadRight(60, '=')}\n\n";
-            output += $"Итог:\n";
-            output += $"  x = {result.X:F10}\n";
-            output += $"  y = {result.Y:F10}\n\n";
-            output += $"Проверка:\n";
-            output += $"  f1(x,y) = {system.F1(result.X, result.Y):E10}\n";
-            output += $"  f2(x,y) = {system.F2(result.X, result.Y):E10}\n\n";
-            output += $"Кол-во итераций: {result.Iterations}\n\n";
-            output += $"Вектор погрешностей:\n";
-
-            for (int i = 0; i < result.Errors.Count && i < 20; i++)
-            {
-                output += $"  Итерация {i + 1}: |Δx| = {result.Errors[i].dx:F10}, |Δy| = {result.Errors[i].dy:F10}\n";
-            }
-
-            return output;
-        }
-
-        private void InitializeComponent()
-        {
-
-        }
-
-        private void BtnDrawSystemGraph_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                SystemEquation system = systems[cmbSystem.SelectedIndex];
-                ChartDrawer.DrawSystemGraph(chartSystem, system, cmbSystem.SelectedIndex, lastSolution);
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-        private string change(string input)
-        {
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return input;
-            } 
-
-            return input.Replace(',', '.');
-        }
+        private void InitializeComponent() { }
     }
-
 }
