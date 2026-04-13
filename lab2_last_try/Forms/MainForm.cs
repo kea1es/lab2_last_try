@@ -42,7 +42,6 @@ namespace NumericalMethodsApp
 
         private void InitializeComponents()
         {
-            // Настройка формы и вкладок
             this.Text = "Численные методы. Решение нелинейных уравнений и систем";
             this.Size = new Size(1200, 800);
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -64,64 +63,65 @@ namespace NumericalMethodsApp
         {
             int y = 20;
 
-            // Выбор уравнения
-            var lblEquation = new Label { Text = "Выберите уравнение:", Location = new Point(20, y), Size = new Size(150, 25) };
+            var lableEquation = new Label { Text = "Выберите уравнение:", Location = new Point(20, y), Size = new Size(150, 25) };
             chooseEquation = new ComboBox { Location = new Point(180, y), Width = 400, DropDownStyle = ComboBoxStyle.DropDownList };
             y += 35;
 
-            // Выбор метода
-            var lblMethod = new Label { Text = "Выберите метод:", Location = new Point(20, y), Size = new Size(150, 25) };
+            var lableMethod = new Label { Text = "Выберите метод:", Location = new Point(20, y), Size = new Size(150, 25) };
             chooseMethod = new ComboBox { Location = new Point(180, y), Width = 250, DropDownStyle = ComboBoxStyle.DropDownList };
             chooseMethod.Items.AddRange(new string[] { "Метод половинного деления", "Метод секущих", "Метод простой итерации" });
             chooseMethod.SelectedIndex = 0;
+
             y += 35;
 
-            // Границы интервала
-            var lblLeft = new Label { Text = "Левая граница a:", Location = new Point(20, y), Size = new Size(120, 25) };
+            var lableLeft = new Label { Text = "Левая граница a:", Location = new Point(20, y), Size = new Size(120, 25) };
             leftBorder = new TextBox { Text = "0", Location = new Point(150, y), Width = 100 };
-            var lblRight = new Label { Text = "Правая граница b:", Location = new Point(270, y), Size = new Size(120, 25) };
+            var lableRight = new Label { Text = "Правая граница b:", Location = new Point(270, y), Size = new Size(120, 25) };
             rightBorder = new TextBox { Text = "2", Location = new Point(400, y), Width = 100 };
+
             y += 35;
 
-            // Погрешность
-            var lblEps = new Label { Text = "Погрешность ε:", Location = new Point(20, y), Size = new Size(100, 25) };
+            var lableEps = new Label { Text = "Погрешность ε:", Location = new Point(20, y), Size = new Size(100, 25) };
             epsilon = new TextBox { Text = "0.0001", Location = new Point(130, y), Width = 100 };
+
             y += 35;
 
-            // Группы ввода/вывода
             var groupInput = CreateInputGroup(ref y);
             var groupOutput = CreateOutputGroup(ref y);
+
             y += 80;
 
-            // Кнопки
-            btnSolve = new Button { Text = "Решить уравнение", Location = new Point(20, y), Size = new Size(150, 35), BackColor = Color.LightGreen };
-            btnDrawGraph = new Button { Text = "Построить график", Location = new Point(190, y), Size = new Size(150, 35), BackColor = Color.LightBlue };
+            btnSolve = new Button { Text = "Решить уравнение", Location = new Point(20, y), Size = new Size(150, 35), BackColor = Color.White };
+            btnDrawGraph = new Button { Text = "Построить график", Location = new Point(190, y), Size = new Size(150, 35), BackColor = Color.White };
+
             y += 50;
 
-            // Результаты
-            var lblResult = new Label { Text = "Результаты:", Location = new Point(20, y), Size = new Size(100, 25) };
+
+            var lableResult = new Label { Text = "Результаты:", Location = new Point(20, y), Size = new Size(100, 25) };
             y += 25;
+
             txtResult = new RichTextBox { Location = new Point(20, y), Size = new Size(550, 200), Font = new Font("Consolas", 10), ReadOnly = true };
             y += 210;
 
-            // График
             chartEquation = new Chart { Location = new Point(600, 20), Size = new Size(550, 450) };
             chartEquation.ChartAreas.Add(new ChartArea());
             chartEquation.ChartAreas[0].AxisX.Title = "x";
             chartEquation.ChartAreas[0].AxisY.Title = "f(x)";
 
             tab.Controls.AddRange(new Control[] {
-                lblEquation, chooseEquation, lblMethod, chooseMethod, lblLeft, leftBorder,
-                lblRight, rightBorder, lblEps, epsilon, groupInput, groupOutput,
-                btnSolve, btnDrawGraph, lblResult, txtResult, chartEquation
+                lableEquation, chooseEquation, lableMethod, chooseMethod, lableLeft, leftBorder,
+                lableRight, rightBorder, lableEps, epsilon, groupInput, groupOutput,
+                btnSolve, btnDrawGraph, lableResult, txtResult, chartEquation
             });
         }
 
         private GroupBox CreateInputGroup(ref int y)
         {
             var groupInput = new GroupBox { Text = "Ввод данных", Location = new Point(20, y), Size = new Size(250, 70) };
+
             rbtnKeyboardInput = new RadioButton { Text = "С клавиатуры", Location = new Point(10, 20), Checked = true };
             rbtnFileInput = new RadioButton { Text = "Из файла", Location = new Point(10, 45) };
+
             groupInput.Controls.AddRange(new Control[] { rbtnKeyboardInput, rbtnFileInput });
             return groupInput;
         }
@@ -129,8 +129,10 @@ namespace NumericalMethodsApp
         private GroupBox CreateOutputGroup(ref int y)
         {
             var groupOutput = new GroupBox { Text = "Вывод результатов", Location = new Point(290, y), Size = new Size(250, 70) };
+
             rbtnScreenOutput = new RadioButton { Text = "На экран", Location = new Point(10, 20), Checked = true };
             rbtnFileOutput = new RadioButton { Text = "В файл", Location = new Point(10, 45) };
+
             groupOutput.Controls.AddRange(new Control[] { rbtnScreenOutput, rbtnFileOutput });
             return groupOutput;
         }
@@ -139,73 +141,83 @@ namespace NumericalMethodsApp
         {
             int y = 20;
 
-            // Выбор системы
-            var lblSystem = new Label { Text = "Выберите систему:", Location = new Point(20, y), Size = new Size(150, 25) };
+            var lableSystem = new Label { Text = "Выберите систему:", Location = new Point(20, y), Size = new Size(150, 25) };
             cmbSystem = new ComboBox { Location = new Point(180, y), Width = 400, DropDownStyle = ComboBoxStyle.DropDownList };
+
             y += 40;
 
-            // Начальные приближения
-            var lblX0 = new Label { Text = "x₀ =", Location = new Point(20, y), Size = new Size(40, 25) };
+
+            var lableX0 = new Label { Text = "x₀ =", Location = new Point(20, y), Size = new Size(40, 25) };
             x0 = new TextBox { Text = "-0.25", Location = new Point(70, y), Width = 100 };
-            var lblY0 = new Label { Text = "y₀ =", Location = new Point(190, y), Size = new Size(40, 25) };
+            var lableY0 = new Label { Text = "y₀ =", Location = new Point(190, y), Size = new Size(40, 25) };
             y0 = new TextBox { Text = "1.12", Location = new Point(240, y), Width = 100 };
+
             y += 40;
 
-            // Погрешность
-            var lblEps = new Label { Text = "Погрешность ε:", Location = new Point(20, y), Size = new Size(100, 25) };
+
+            var lableEps = new Label { Text = "Погрешность ε:", Location = new Point(20, y), Size = new Size(100, 25) };
             epsilonSystem = new TextBox { Text = "0.0001", Location = new Point(130, y), Width = 100 };
+
             y += 50;
 
-            // Кнопки
+
             btnSolveSystem = new Button { Text = "Решить систему (Метод Ньютона)", Location = new Point(20, y), Size = new Size(220, 35), BackColor = Color.LightGreen };
             btnDrawSystemGraph = new Button { Text = "Построить графики", Location = new Point(260, y), Size = new Size(150, 35), BackColor = Color.LightBlue };
+
             y += 50;
 
-            // Результаты
-            var lblResult = new Label { Text = "Результаты:", Location = new Point(20, y), Size = new Size(100, 25) };
+
+            var lableResult = new Label { Text = "Результаты:", Location = new Point(20, y), Size = new Size(100, 25) };
             y += 25;
+
+
             resultSystem = new RichTextBox { Location = new Point(20, y), Size = new Size(550, 350), Font = new Font("Consolas", 10), ReadOnly = true };
             y += 370;
 
-            // График
+
             chartSystem = new Chart { Location = new Point(600, 20), Size = new Size(550, 450) };
             chartSystem.ChartAreas.Add(new ChartArea());
             chartSystem.ChartAreas[0].AxisX.Title = "x";
             chartSystem.ChartAreas[0].AxisY.Title = "y";
 
             tab.Controls.AddRange(new Control[] {
-                lblSystem, cmbSystem, lblX0, x0, lblY0, y0, lblEps, epsilonSystem,
-                btnSolveSystem, btnDrawSystemGraph, lblResult, resultSystem, chartSystem
+                lableSystem, cmbSystem, lableX0, x0, lableY0, y0, lableEps, epsilonSystem,
+                btnSolveSystem, btnDrawSystemGraph, lableResult, resultSystem, chartSystem
             });
         }
 
         private void InitializeData()
         {
-            // Инициализация уравнений
             equations = new List<Equation>
             {
                 new Equation("f(x) = 2x³ + 3,41x² - 23,74x + 2,95",
                     x => 2*Math.Pow(x,3) + 3.41*Math.Pow(x,2) - 23.74*x + 2.95,
                     x => 6*Math.Pow(x,2) + 6.82*x - 23.74),
+
                 new Equation("f(x) = x³ + 2,84x² - 5,606x - 14,766",
                     x => Math.Pow(x,3) + 2.84*Math.Pow(x,2) - 5.606*x - 14.766,
                     x => 3*Math.Pow(x,2) + 5.68*x - 5.606),
+
                 new Equation("f(x) = sin(x) - x/2",
                     x => Math.Sin(x) - x/2,
                     x => Math.Cos(x) - 0.5),
+
                 new Equation("f(x) = cos(x) - x",
                     x => Math.Cos(x) - x,
                     x => -Math.Sin(x) - 1),
+
                 new Equation("f(x) = e^(-x) - x",
                     x => Math.Exp(-x) - x,
                     x => -Math.Exp(-x) - 1)
             };
 
             foreach (var eq in equations)
+            {
                 chooseEquation.Items.Add(eq.Name);
+            }
             chooseEquation.SelectedIndex = 0;
 
-            // Инициализация систем
+
             systems = new List<SystemEquation>
             {
                 new SystemEquation(
@@ -217,6 +229,7 @@ namespace NumericalMethodsApp
                     (x, y) => 1,
                     (x, y) => -Math.Sin(y-1)
                 ),
+
                 new SystemEquation(
                     "Система 2: 2x - sin(y-0,5) = 1, y + cos(x) = 1,5",
                     (x, y) => 2*x - Math.Sin(y-0.5) - 1,
@@ -229,7 +242,9 @@ namespace NumericalMethodsApp
             };
 
             foreach (var sys in systems)
+            {
                 cmbSystem.Items.Add(sys.Name);
+            }
             cmbSystem.SelectedIndex = 0;
 
             btnSolve.Click += BtnSolve_Click;
@@ -259,11 +274,12 @@ namespace NumericalMethodsApp
                         else return;
                     }
                 }
+
                 else
                 {
-                    a = double.Parse(leftBorder.Text, CultureInfo.InvariantCulture);
-                    b = double.Parse(rightBorder.Text, CultureInfo.InvariantCulture);
-                    eps = double.Parse(epsilon.Text, CultureInfo.InvariantCulture);
+                    a = double.Parse(change(leftBorder.Text), CultureInfo.InvariantCulture);
+                    b = double.Parse(change(rightBorder.Text), CultureInfo.InvariantCulture);
+                    eps = double.Parse(change(epsilon.Text), CultureInfo.InvariantCulture);
                 }
 
                 ValidateInput(a, b, eps);
@@ -281,6 +297,7 @@ namespace NumericalMethodsApp
                     ChartDrawer.DrawFunctionGraph(chartEquation, equation, a, b);
                     ChartDrawer.MarkRootOnGraph(chartEquation, solutionResult.root);
                 }
+
                 else
                 {
                     result += $"Ошибка: {solutionResult.error}\n\n";
@@ -310,8 +327,14 @@ namespace NumericalMethodsApp
 
         private void ValidateInput(double a, double b, double eps)
         {
-            if (a >= b) throw new Exception("Левая граница должна быть меньше правой");
-            if (eps <= 0) throw new Exception("Погрешность должна быть положительной");
+            if (a >= b)
+            {
+                throw new Exception("Левая граница должна быть меньше правой");
+            }
+            if (eps <= 0)
+            {
+                throw new Exception("Погрешность должна быть положительной");
+            }
         }
 
         private void CheckRootsExistence(Equation equation, double a, double b)
@@ -323,10 +346,14 @@ namespace NumericalMethodsApp
             {
                 var roots = EquationSolver.FindIntervals(equation, a, b, 100);
                 if (roots.Count == 0)
-                    throw new Exception("На заданном интервале нет корней!");
+                {
+                    throw new Exception("На заданном интервале нет корней");
+                }
+
                 else if (roots.Count > 1)
-                    MessageBox.Show($"Найдено {roots.Count} корней. Будет найден первый корень.",
-                        "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                {
+                    MessageBox.Show($"Найдено {roots.Count} корней. Будет найден первый корень.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
 
@@ -350,26 +377,39 @@ namespace NumericalMethodsApp
                         var result = EquationSolver.BisectionMethod(equation, a, b, eps);
                         return (true, result.Root, result.Iterations, null);
                     }
+
                     catch (Exception ex)
                     {
                         return (false, 0, 0, ex.Message);
                     }
+
+
                 case 1:
                     try
                     {
                         var result = EquationSolver.SecantMethod(equation, a, b, eps);
                         return (true, result.Root, result.Iterations, null);
                     }
+
                     catch (Exception ex)
                     {
                         return (false, 0, 0, ex.Message);
                     }
+
+
                 case 2:
                     var iterationResult = EquationSolver.SimpleIterationMethod(equation, a, b, eps);
                     if (iterationResult.Success)
+                    {
                         return (true, iterationResult.Root, iterationResult.Iterations, null);
+                    }
+
                     else
+                    {
                         return (false, 0, 0, "Не удалось найти φ(x) с условием сходимости |φ'(x)| < 1");
+                    }
+
+
                 default:
                     return (false, 0, 0, "Метод не выбран");
             }
@@ -388,11 +428,13 @@ namespace NumericalMethodsApp
         {
             try
             {
-                double a = double.Parse(leftBorder.Text, CultureInfo.InvariantCulture);
-                double b = double.Parse(rightBorder.Text, CultureInfo.InvariantCulture);
+                double a = double.Parse(change(leftBorder.Text), CultureInfo.InvariantCulture);
+                double b = double.Parse(change(rightBorder.Text), CultureInfo.InvariantCulture);
+
                 Equation equation = equations[chooseEquation.SelectedIndex];
                 ChartDrawer.DrawFunctionGraph(chartEquation, equation, a, b);
             }
+
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -403,12 +445,15 @@ namespace NumericalMethodsApp
         {
             try
             {
-                double x_0 = double.Parse(x0.Text, CultureInfo.InvariantCulture);
-                double y_0 = double.Parse(y0.Text, CultureInfo.InvariantCulture);
-                double eps = double.Parse(epsilonSystem.Text, CultureInfo.InvariantCulture);
+                double x_0 = double.Parse(change(x0.Text), CultureInfo.InvariantCulture);
+                double y_0 = double.Parse(change(y0.Text), CultureInfo.InvariantCulture);
+                double eps = double.Parse(change(epsilonSystem.Text), CultureInfo.InvariantCulture);
 
                 if (eps <= 0)
-                    throw new Exception("Погрешность должна быть положительной!");
+                {
+                    throw new Exception("Погрешность должна быть положительной");
+                }
+
 
                 SystemEquation system = systems[cmbSystem.SelectedIndex];
                 var result = SystemSolver.NewtonMethod(system, x_0, y_0, eps);
@@ -422,6 +467,7 @@ namespace NumericalMethodsApp
                 MessageBox.Show("Система решена. Точка решения на графике.", "Успех",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -452,6 +498,11 @@ namespace NumericalMethodsApp
             return output;
         }
 
+        private void InitializeComponent()
+        {
+
+        }
+
         private void BtnDrawSystemGraph_Click(object sender, EventArgs e)
         {
             try
@@ -459,11 +510,21 @@ namespace NumericalMethodsApp
                 SystemEquation system = systems[cmbSystem.SelectedIndex];
                 ChartDrawer.DrawSystemGraph(chartSystem, system, cmbSystem.SelectedIndex, lastSolution);
             }
+
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        private string change(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return input;
+            } 
 
+            return input.Replace(',', '.');
+        }
     }
+
 }

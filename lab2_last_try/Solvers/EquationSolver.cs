@@ -9,9 +9,7 @@ namespace NumericalMethodsApp.Solvers
     /// </summary>
     public static class EquationSolver
     {
-        /// <summary>
-        /// Метод половинного деления
-        /// </summary>
+        // метод половинного деления
         public static (double Root, int Iterations) BisectionMethod(Equation equation, double a, double b, double eps)
         {
             int iterations = 0;
@@ -45,9 +43,7 @@ namespace NumericalMethodsApp.Solvers
             return (c, iterations);
         }
 
-        /// <summary>
-        /// Метод секущих
-        /// </summary>
+        // метод секущих
         public static (double Root, int Iterations) SecantMethod(Equation equation, double a, double b, double eps)
         {
             int iterations = 0;
@@ -70,9 +66,7 @@ namespace NumericalMethodsApp.Solvers
             return (x1, iterations);
         }
 
-        /// <summary>
-        /// Метод простой итерации
-        /// </summary>
+        // метод простой итерации
         public static IterationResult SimpleIterationMethod(Equation equation, double a, double b, double eps)
         {
             double lambda = -1.0 / FindMaxDerivative(equation, a, b);
@@ -107,9 +101,7 @@ namespace NumericalMethodsApp.Solvers
             };
         }
 
-        /// <summary>
-        /// Поиск максимума производной
-        /// </summary>
+        // поиск максимума производной
         private static double FindMaxDerivative(Equation equation, double a, double b)
         {
             double max = Math.Abs(equation.Derivative(a));
@@ -121,9 +113,7 @@ namespace NumericalMethodsApp.Solvers
             return max;
         }
 
-        /// <summary>
-        /// Поиск максимума производной для итерационной функции
-        /// </summary>
+        // поиск максимума производной для итерационной функции
         private static double FindMaxDerivativeDerivative(Func<double, double> phi, double a, double b)
         {
             double h = 1e-6;
@@ -138,9 +128,7 @@ namespace NumericalMethodsApp.Solvers
             return max;
         }
 
-        /// <summary>
-        /// Поиск интервалов с корнями
-        /// </summary>
+        // поиск интервалов с корнями
         public static List<double> FindIntervals(Equation equation, double a, double b, int steps)
         {
             List<double> intervals = new List<double>();

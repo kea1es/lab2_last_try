@@ -9,9 +9,7 @@ namespace NumericalMethodsApp.Solvers
     /// </summary>
     public static class SystemSolver
     {
-        /// <summary>
-        /// Метод Ньютона для решения систем
-        /// </summary>
+        // метод Ньютона для решения систем
         public static NewtonResult NewtonMethod(SystemEquation system, double x0, double y0, double eps)
         {
             int iterations = 0;

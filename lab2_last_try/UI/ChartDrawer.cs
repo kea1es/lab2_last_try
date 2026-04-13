@@ -10,9 +10,7 @@ namespace NumericalMethodsApp.UI
     /// </summary>
     public static class ChartDrawer
     {
-        /// <summary>
-        /// Построение графика функции
-        /// </summary>
+        // построение графика функции
         public static void DrawFunctionGraph(Chart chart, Equation equation, double a, double b)
         {
             chart.Series.Clear();
@@ -51,9 +49,7 @@ namespace NumericalMethodsApp.UI
             chart.ChartAreas[0].RecalculateAxesScale();
         }
 
-        /// <summary>
-        /// Отметка корня на графике
-        /// </summary>
+        // отметка корня на графике
         public static void MarkRootOnGraph(Chart chart, double root)
         {
             try
@@ -78,9 +74,7 @@ namespace NumericalMethodsApp.UI
             catch { }
         }
 
-        /// <summary>
-        /// Построение графиков для системы
-        /// </summary>
+        // построение графиков для системы
         public static void DrawSystemGraph(Chart chart, SystemEquation system, int systemIndex, NewtonResult lastSolution)
         {
             chart.Series.Clear();
@@ -104,15 +98,21 @@ namespace NumericalMethodsApp.UI
                 for (double x = -2; x <= 2; x += 0.01)
                 {
                     double y = (2 - Math.Sin(x)) / 2;
+
                     if (y >= -2 && y <= 2)
+                    {
                         series1.Points.AddXY(x, y);
+                    }   
                 }
 
                 for (double y = -2; y <= 2; y += 0.01)
                 {
                     double x = 0.7 - Math.Cos(y - 1);
+
                     if (x >= -2 && x <= 2)
+                    {
                         series2.Points.AddXY(x, y);
+                    }    
                 }
             }
 
@@ -121,15 +121,21 @@ namespace NumericalMethodsApp.UI
                 for (double x = -2; x <= 2; x += 0.01)
                 {
                     double y = 1.5 - Math.Cos(x);
+
                     if (y >= -2 && y <= 2)
+                    {
                         series2.Points.AddXY(x, y);
+                    }
                 }
 
                 for (double y = -2; y <= 2; y += 0.01)
                 {
                     double x = (1 + Math.Sin(y - 0.5)) / 2;
+
                     if (x >= -2 && x <= 2)
+                    {
                         series1.Points.AddXY(x, y);
+                    }
                 }
             }
 
@@ -149,6 +155,7 @@ namespace NumericalMethodsApp.UI
                     BorderWidth = 3,
                     BorderColor = Color.Black
                 };
+
                 solutionPoint.Points.AddXY(lastSolution.X, lastSolution.Y);
                 solutionPoint.Points[0].Label = $"  ({lastSolution.X:F4}, {lastSolution.Y:F4})";
                 solutionPoint.Points[0].LabelForeColor = Color.DarkGreen;
